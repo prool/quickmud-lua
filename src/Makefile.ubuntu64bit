@@ -1,0 +1,43 @@
+# Makefile for Ubuntu v.16.10 64 bit
+
+CC = gcc
+RM = rm
+EXE = rom
+PROF = -O -g3
+
+# prool:
+#C_FLAGS = $(PROF) -Wall
+C_FLAGS = $(PROF) -Wall -I/usr/include/lua5.1
+
+#L_FLAGS = $(PROF) -lcrypt -llua
+L_FLAGS = $(PROF) -lcrypt -lm -ldl /usr/lib/x86_64-linux-gnu/liblua5.1.so /lib/x86_64-linux-gnu/libm.so.6 /lib/x86_64-linux-gnu/libdl.so.2 /usr/lib/x86_64-linux-gnu/liblua5.1.so
+
+#IMC2 - Comment out to disable IMC2 support
+IMC = 1
+
+ifdef IMC
+   C_FLAGS := $(C_FLAGS) -DIMC -DIMCROM
+endif
+
+# Source Files
+SRC_FILES := $(wildcard *.c)
+
+# Object Files
+OBJ_DIR = obj
+OBJ_FILES := $(patsubst %.c,$(OBJ_DIR)/%.o,$(SRC_FILES))
+
+rom: $(OBJ_FILES)
+	$(RM) -f $(EXE)
+	$(CC) -o $(EXE) $(OBJ_FILES) $(L_FLAGS)
+
+$(OBJ_DIR)/%.o: %.c
+	$(CC) $(C_FLAGS) -c -o $@ $<
+
+clean:
+	$(RM) -f $(OBJ_FILES) $(EXE) *~ *.bak *.orig *.rej
+
+distro:
+	make clean
+	cd ../..
+	$(RM) -f log/*.log
+	tar zvcf quickmud-`date -I`.tar.gz QuickMUD
