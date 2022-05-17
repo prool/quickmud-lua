@@ -357,6 +357,19 @@ int mud_ansiprompt, mud_ansicolor, mud_telnetga;
 /* paranoid types who don't want the 'net at large peeking at their MUD)      */
 char *mud_ipaddress = "0.0.0.0";
 
+
+// prool begin
+// prool here: http://mud.kharkov.org proolix@gmail.com
+int isprool(char c) // prool's modif for isprint
+{
+if ((c<32)&&(c>=0)) return 0;
+if (c==-1) return 0;
+if (c==-2) return 0;
+if (c==-3) return 0;
+return 1;
+}
+// prool end
+
 int main (int argc, char **argv)
 {
     struct timeval now_time;
@@ -1245,7 +1258,7 @@ void read_from_buffer (DESCRIPTOR_DATA * d)
 
         if (d->inbuf[i] == '\b' && k > 0)
             --k;
-        else if (isascii (d->inbuf[i]) && isprint (d->inbuf[i]))
+        else if ( /*isascii (d->inbuf[i]) && isprint (d->inbuf[i])*/ isprool((d->inbuf[i]))) // prool: UTFization
             d->incomm[k++] = d->inbuf[i];
     }
 
